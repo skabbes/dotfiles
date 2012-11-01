@@ -1,0 +1,110 @@
+set nocompatible
+set history=1000
+set undolevels=1000
+let mapleader=","
+call pathogen#infect()
+
+nnoremap <leader>ve :vsplit $MYVIMRC<cr>
+nnoremap <leader>vs :source $MYVIMRC<cr>
+
+function! AlignAssign() range
+
+  let max_col = 0
+  for text in getline(a:firstline, a:lastline)
+    let pos = match(text, '\s*=')
+    if pos != -1
+      let max_col = max([max_col, pos])
+    endif
+  endfor
+
+  for line in range(a:firstline, a:lastline)
+    let text = getline(line)
+    let pos  = match(text, '\s*=')
+    if pos != -1
+      call setpos('.', [0, line, pos+1, 0])
+      execute "normal" "i \e" . "dt=" . (max_col - pos + 1) . "i "
+    endif
+  endfor
+
+endfunction
+
+" turn off swap files and backup copies, git instead
+set nobackup
+set noswapfile
+set nowritebackup
+" STFU
+set visualbell
+
+" Tab and indentation related stuff
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set shiftround
+syntax on
+
+set number
+
+set hlsearch
+set incsearch
+set ignorecase
+set showmatch
+
+" Match the color column to match the maximum width github will display
+set colorcolumn=120
+
+set autoindent
+" autochdir is useful when using vim just generally, not in 'project' mode
+" set autochdir
+
+" When switching buffers, if a tab exists with that buffer, automatically
+" switch to it
+set switchbuf=usetab
+
+filetype plugin indent on
+set ruler
+" highlight the currentline
+set cursorline
+
+" Color related stuff
+set gfn=Inconsolata:h14
+colorscheme wombat
+
+" left and right is for navigating buffers
+map <right> :tabnext<cr>
+map <left>  :tabprev<cr>
+
+" More useful shortcuts for switching between windows
+map <down>  <C-w>j
+map <C-j>  <C-w>j
+map <up>  <C-w>k
+map <C-k>  <C-w>k
+map <C-h>  <C-w>h
+map <C-l>  <C-w>l
+
+set list listchars=tab:❘-,trail:·,extends:»,precedes:«
+
+" Coffeescript syntax checking
+au BufNewFile,BufReadPost *.coffee setl foldmethod=indent tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+au BufWritePost *.coffee silent CoffeeMake! -b | cwindow | redraw!
+
+" Make open in new tab the default in command-t
+let g:CommandTAcceptSelectionMap = '<C-t>'
+let g:CommandTAcceptSelectionTabMap = '<CR>'
+let g:CommandTMaxHeight = 10
+let coffee_make_options = "--output /tmp"
+
+" Custom mappings for plugins
+nnoremap <leader>b :TagbarToggle<CR>
+nnoremap <leader>e :Errors<CR>
+nnoremap <leader>d :NERDTreeToggle<CR>
+
+" map a leader command to trigger a full syntax highlighting redraw
+nnoremap <leader>s :syntax sync fromstart<CR>
+
+imap jk <Esc>
+imap fd <Esc>
+
+" remap these last so that the other mapped commands still work as expected
+map ; :
+noremap ;; ;
